@@ -1,0 +1,191 @@
+/*ANSIBLE commands*/
+-- Installing ansible on UBUNTU master node follow official documentation 
+
+sudo apt update
+sudo apt install software-properties-common -y
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible -y
+
+-- Installing ansible on RHEL master node follow official documentation
+sudo dnf install epel-release -y
+sudo dnf install ansible -y 
+
+
+ansible --version  -> check the ansible version (python will be installed by default as part of ansible)
+
+/*NOTES*/
+
+-- we get python installed after installing ansible (ansible tool is developed in python language)
+-- ansible config file = /etc/ansible/ansible.cfg  
+-- python installation is a pre-requisite for ansible, but in all Linux servers python is installed by default
+
+
+-- ansible Master and Node1 need to authenticate - through ssh ec2-user@node1-private-ip we can check whether master and node1 are authenticating are not  
+   from master trust relation need to be enabled through ssh-keygen (2 keys will be generated id_rsa and id_rsa.pub)
+   From master copy the public key and copy this public key to all the nodes 
+
+cat id_rsa.pub
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKFWd1D9DycHKNc8/KCgJK4VO3x63gqDrt0J9dIw6ivI root@ip-172-31-45-247
+
+--copy this key into node1 location authorized keys: /root/.ssh/
+
+-- trust relation is completed - now check the authentication from master - ssh ec2-user@node1-private-ip -> its working now 
+
+In /etc/ansible -> a file called hosts -> this hosts file is called default inventory -> inventory contains all server IPs or Domains -> we have to add target nodes IP addresses in this inventory file
+ 
+/*from master check whether ansible is able to ping the remote node hosts*/
+ansible -m ping group-name -> it checks whether group-name exists in default inventory host file, m-module here, ping is a module, we are pinging remote host, output should be pong 
+
+-- Linux commands in ansible are called as modules (like ping, service etc. are called as modules in ansible)
+
+/*Basic playbook*/
+yaml/yml script (yet another markup language) - extension will be .yml/.yaml
+
+Playbook - 3 parts - 
+1) play/target -> where it should get executed 
+2) variables
+3) tasks 
+
+mkdir playbook
+vi filedir.yaml
+
+- hosts: node1
+  tasks:
+   - name: Create a directory if it does not exist
+     ansible.builtin.file:
+       path: /opt/kishore_ansible
+       state: directory
+
+   - name: Create a file under opt directory
+     ansible.builtin.file:
+       path: /opt/file1
+       state: touch
+
+
+/*validate playbook - syntax check*/
+ansible-playbook filedir.yaml --syntax-check 
+
+/*dry run*/
+ansible-playbook filedir.yaml --check 
+
+/*actual execution*/
+ansible-playbook filedir.yaml -> first it checks in the inventory whether the mentioned hosts exist or not, check in target node file and directory created
+
+
+-- NOTE: if we want to delete the above file and directory then just change the state: absent 
+
+
+-- Modules are like ansible.builtin.file, ansible.builtin.user, ansible.builtin.group, ansible.builtin.service
+
+Customized inventory –
+vi hosts -> create this hosts file 
+ansible -m ping -i hosts group-name -> checks in customized inventory file, ping pong response 
+
+/*if we are executing from a different path*/
+ansible-playbook -i /root/playbook/hosts  /root/playbook/filedir.yaml -> inventory location, playbook location 
+
+
+
+/*create a playbook for installing apache webserver*/
+-- Manual approach
+
+for Apache webserver on RHEL/CENTOS/Fedora we need to install a package -> httpd i.e. yum install httpd
+for Apache webserver on ubuntu we need to install a package -> apache2 -> apt install apache2
+
+cat /etc/os-release -> O.S flavour - RHEL
+yum update -y
+yum install httpd -y -> install apache webserver 
+systemctl start httpd -> start apache webserver 
+systemctl enable httpd -> enable apache webserver at boot level 
+systemctl status httpd  -> 
+
+check from browser ->  //publicip:80 -> default apache static page will be displayed
+
+/var/www/html -> default location -> vi index.html -> we can play the game 
+
+
+-- write a playbook to automate the above process
+ 
+mkdir playbook
+vi apache.yaml
+
+- hosts: node1
+  tasks:
+   - name: install apache web server
+     ansible.builtin.dnf:
+       name: httpd
+       state: latest
+       update_cache: yes
+
+   - name: start httpd service, if not started 
+     ansible.builtin.service:
+       name: httpd
+       state: started
+       enabled: yes
+
+   - name: copy the customer website into web server 
+     ansible.builtin.cpy:
+       src: /root/playbook/index.html
+       dest: /var/www/html
+
+
+/*validate playbook - syntax check*/
+ansible-playbook apache.yaml --syntax-check 
+
+/*dry run*/
+ansible-playbook apache.yaml --check 
+
+/*actual execution*/
+ansible-playbook apache.yaml -> it installs apache web server
+
+
+/*ansible ad-hoc commands*/
+
+ad-hoc command - uses /usr/bin/ansible command line tool to automate a single task on one or more managed nodes
+ad-hoc commands are quick and easy - but they are not reusable 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
