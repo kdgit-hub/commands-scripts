@@ -1,0 +1,65 @@
+/**Git**/
+/*installing git software on RHEL family*/
+sudo yum install git -y 
+
+/*installing git software on Debian family*/
+sudo apt-get install git -y  -> apt is a package manager 
+
+/*install on windows*/
+git.exe  
+
+git --version -> git version Azure Repos 
+
+
+/*Configure username and email*/ - after git installation configure un and email
+$git config --global user.name "kishore dodda"
+$git config --global user.email "kishore01@gmail.com"
+git config --list  -> to get list of configured un and email info 
+
+/*setup local repo - inside local repo we develop the code, REMEMBER- ACP- ADD,COMMIT,PUSH*/
+mkdir facebook
+git init -> it initializes a new git repo for a project, also git creates a new sub-directory called .git (.git contains all the files and directories of the repo)
+git status -> displays current status of the working directory
+git add filename -> adds all the current changes (new and modified files) to the staging area
+git add . -> all files will be moved from working area to staging area
+git commit -m "this is my first commmit for this file" -> git will commit the file from staging area to local repo
+git log -> to check the history (commitid, other info), HEAD -> represents where you are/latest commit
+
+/*git push - send code from local repo to github repo*/
+NOTE: https and ssh are protocols - to send any data from local to web, SSH is recommended authentication using keys, if https protocol then authentication using token  
+
+git remote add origin https://github.com/opensource-work/gitlearning.git  (or) git remote add origin git@github.com:opensource-work/gitpractice.git  
+
+git push -u origin  master -> push the code from local repo to remote repo (git-hub)
+-> if authentication error then generate sshkey using ssh-keygen if ssh then copy public key and paste in github account settings -> SSH&GPG keys->new ssh key->copy the public key
+
+git push origin  master -> -u only for the first time 
+** if https then git remote set-url origin https://tokenid@github.com/username/remotereponame
+git clone remote-repo-url -> cloning remote repo to local repo
+
+-> if we are using https then authenticate using token ->git hub account settings -> developer settings -> personal access tokens -> tokens classic -> generate new token classic -> save the key -> cmd prompt -> syntax: git remote set-url origin https://token@github.com/user-name/repository
+git remote set-url origin https://token@github.com/kdgit-hub/PostgreSQL-DB
+git push origin main -> push the code from local repo to remote repo (git-hub)
+
+
+/*Branching*/
+Default branch: main/master (main/master contains stable/good/correct code)
+git branch -> displays all branches in our local repo (* represents current branch)
+git branch branch-name -> to create a new branch 
+git checkout branch-name -> switch from current branch to other branch
+git checkout -b branch-name -> create a new branch + switch to that branch
+
+git push origin branch-name -> push the local branch to Github 
+git push --all origin -> push multiple branches at a time to Github 
+
+/*delete a local branch*/
+git branch -D branch-name -> delete a local branch
+-- we have to Update delete the branch in Github then only it will delete the branch in Github
+git push origin :deleted-branch-name -> after origin space will be there
+
+/*Using git add, File moved from working directory -> staging area – If we want to undo (unstage)?- use git restore*/
+git restore --staged  hello.txt -> to unstage i.e.WA => SA => WA, move file back from staging area to working area  
+git reset --soft HEAD~1  -> already committed file if we want to uncommit i.e. WA => SA => LocalRepo => back to SA
+git revert commit-id  -> deleted file if we want to undo (only tracking files can be recovered)
+
+vi .gitignore   -> don’t track unnecessary files, we have to create this file in local repo *.tmp and save this file, if we see git status - this will not track .tmp files, this will apply to all branches 
