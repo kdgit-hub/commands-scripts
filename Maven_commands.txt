@@ -1,0 +1,110 @@
+/*Maven installation on RHEL family*/
+- cat /etc/os-release
+- pre-requisite to install Maven, first install Java (open JDK 11) 
+- java --version 
+- mvn --version
+- sudo yum install java-11-amazon-corretto-headless -y -> RHEL 10 VERSION - sudo dnf install java-21-openjdk-devel -y
+- java --version
+- maven installation: google - apache maven download - Binary tar.gz archive	apache-maven-3.9.16-bin.tar.gz  rt.click copy link address 
+  sudo wget https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz
+- tar -xvf apache-maven-3.9.16-bin.tar.gz -> untar/unzip
+- cd apache-maven-3.9.16
+- cd bin/
+- pwd (copy the path - /home/ec2-user/apache-maven-3.9.16/bin)
+- set the environment variables 
+- sudo vi /etc/profile  -> at the end paste below lines
+export M2_HOME=/home/ec2-user/apache-maven-3.9.16
+export PATH=$PATH:/home/ec2-user/apache-maven-3.9.16/bin
+- server reboot 
+- mvn --version -> Apache Maven 3.9.16, Maven home: /opt/apache-maven-3.9.16, Java version: 21.0.11
+
+
+/*Maven installation on Debian family - ubuntu */
+- sudo apt update
+- sudo apt install openjdk-11-jdk -y 
+- java -version 
+- sudo wget https://dlcdn.apache.org/maven/maven-3/3.9.14/binaries/apache-maven-3.9.14-bin.tar.gz
+- tar xvf apache-maven-3.9.14-bin.tar.gz -> untar/unzip
+- cd apache-maven-3.9.14
+- cd bin/
+- pwd (copy the path - /home/ubuntu/apache-maven-3.9.14/bin)
+- set the environment variables 
+- sudo vi /etc/profile   -> at the end paste below lines
+export M2_HOME=/home/ubuntu/apache-maven-3.9.14
+export PATH=$PATH:/home/ubuntu/apache-maven-3.9.14/bin
+- server reboot 
+- mvn -version 
+
+
+/*Maven installation on Windows*/
+
+JDK 11 Download location: https://adoptium.net/temurin/releases?version=11&os=any&arch=any
+Apache Maven download for Windows 
+
+Go to System Environment variables - New 
+variable name: JAVA_HOME
+variable value: C:\jdk-11.0.24
+
+path: click on edit: new -  %JAVA_HOME%\bin
+
+VERIFICATION: cmd -> java -version 
+
+set environment variable for Maven as above 
+
+M2_HOME=C:\apache-Maven
+%M2_HOME%\bin
+
+-----------------------------------------------
+-- Build/Compile java-based application we will get the artifact (.WAR/.JAR/.EAR)
+GitHub:     VTechnologies-NagireddyVenna
+
+git clone https://github.com/kdgit-hub/thymeleafexamples-petclinic.git
+To build any project, we need to have 2 files - pom.xml file and src folder 
+
+cd thymeleafexamples-petclinic
+ls
+mvn package -> to compile the project and create the artifact/package (once build success a target folder will be created)
+cd target/ -> then we can see the .war file 
+
+--------------------------------------------------------------------
+
+mvn clean -> cleans the project by deleting the target directory (.war/.jar/.ear)
+mvn validate -> validates the project structure and configuration before the actual build starts (like it validates pom.xml file etc.)
+mvn compile -> compiles the source code of the project located in src/main/java (app.java -->convert to --> app.class)
+mvn test -> runs the unit tests for the project using JUnit 
+mvn package -> packages the compiled code into .JAR/.WAR/.EAR file (artifacts)
+mvn verify ->  verify the integration checks for artifact (.JAR/.WAR)
+mvn install -> installs the packaged artifact(project) into local repo Location usually in user home directory: /.m2/repository  (.WAR will store in .m2 folder)
+--note: if we run directly mvn install then it will run mvn package command also
+mvn deploy -> deploys the project/artifact to a remote repo (like Nexus/JFrog/S3/Azure storage)
+
+NOTE: mvn clean deploy -> means it runs all steps from clean to deploy and mvn deploy -> means it will run all steps from validate to deploy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
