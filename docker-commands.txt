@@ -1,0 +1,137 @@
+/*Installation of Docker on Ubuntu*/ ref: https://docs.docker.com/engine/install/ubuntu/
+
+# Add Docker's official GPG key:
+sudo apt update
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
+
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo systemctl status docker
+
+sudo systemctl start docker
+
+docker --version (or) docker version ->  check client version and server version 
+
+/*Installation of Docker on Linux (RHEL/CentOS/Amazon Linux)*/
+sudo -i -> switch to root 
+yum install docker -y -> install docker software 
+systemctl enable docker -> when system reboots automatically docker service will be up and running
+systemctl status docker -> 
+systemctl start docker ->
+docker --version (or) docker version ->  check client version and server version 
+
+docker images -> list of images 
+
+
+
+
+
+/*Docker commands*/
+
+docker --version
+docker images (or) docker image ls -> list of images in the system
+docker ps -> list of running containers 
+docker ps -a -> list of running containers + stopped containers  
+docker info  -> Edition, etc other system info 
+docker run -d  tomcat -> docker run commands means it start a new container, container will start running, random container name
+docker run -d  --name mytomcat tomcat -> giving a container name called mytomcat
+docker stop container-id -> stop the container
+docker start container-id -> start the container 
+docker rm container-id1  container-id2 -> delete the containers (to delete a container, first we need to stop the container)
+docker rmi image-id  -> deleting the image 
+
+docker pull tomcat:8.0.52 -> pull the image from docker hub to local 
+
+
+docker run image-name -> container creation will be in running state and cursor wont come out until we cancel it (container will create but it will be stopped state)
+docker run -d image-name  -> d means detached mode create the container but run in background, container name will be random
+docker run -d --name tomcat-1 image-name -> container name as tomacat-1 
+
+-- port forwarding
+docker run -d --name tomcat-3 -p 8080:8080 tomcat:8.0.52  -> hostport:containerport (host port should vary if we have multiple containers running)
+
+docker exec -it container-id /bin/bash -> enter into the container (CTRL pq to exit)
+CTRL p q -> exit from container 
+
+docker logs container-id 
+docker stop $(docker ps -q) -> stop multiple containers at a time
+docker rm $(docker ps -a -q) -> delete multiple containers at a time
+docker rmi $(docker images -q) -> delete multiple images at a time
+docker inspect container-id -> complete container and image info (container will have an IP)
+
+
+/*Customized Docker image creation using Dockerfile*/
+1) write a Dockerfile 2) Build 3) run
+
+FROM - gets the base image 
+LABEL -> adds meta data to an image like author info, email (key-value pair)
+RUN -> executes any commands
+EXPOSE -> describe which ports your appliaction is listening on 
+CMD -> is the starting point of our container, if there is no CMD then it is not a proper docker file 
+apk -> is a package manager in alpine, as like apt is a package manager in ubuntu
+
+NOTE- in a Dockerfile, FROM and CMD are mandatory 
+
+Ex: vi Dockerfile
+FROM  alpine:latest 
+LABEL maintainer="kishore@gmail.com"
+RUN apk update 
+RUN apt apache2
+EXPOSE 80
+CMD ["httpd", "-D", "FOREGROUND"]  -> D means run httpd in foreground 
+
+
+docker build -t apache:1.0 .  -> build the docker file (. refers to current directory)
+
+/*from the above customized image if we want to create a container*/
+docker run -d --name myapache -p 80:80 image-id
+
+
+
+-- public registry is Docker Hub/Registry
+-- Private registries are ECR (Elastic Container Registry), GCR (Google Container Registry), ACR (Azure Container Registry)
+
+
+/*push docker image from local to Dockerhub*/
+authentication should happen between local and Dockerhub - docker login 
+docker tag local-image:tagname new-repo:tagname 
+docker push new-repo:tagname 
+
+
+docker pull new-repo:tagname -> pull the image from docker hub to local
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
