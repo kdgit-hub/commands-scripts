@@ -1,0 +1,135 @@
+/*Apache Tomcat*/  
+• Tomcat is an open-source webserver
+• We need Tomcat for hosting Java based applications on the web
+• Java Application servers in the market: Apache Tomcat, JBoss (open-source server), GlassFish (open-source application server), IBM WebSphere, Oracle Weblogic
+• .Net Application server in the market: IIS (Internet Information Services), A web server from Microsoft that serves as an application server for .NET applications
+• Python Application servers in the market: Django, Flask
+
+Dependency for Tomcat? YES, Tomcat is Java based web server, so we need to install JDK. Ex: Tomcat 10 requires Java 11 or later
+Default port number for Tomcat: 8080 (on this port Tomcat listens to http requests)
+NOTE: major configuration file in Tomcat – server.xml
+
+/*Installation of ApacheTomcat on RHEL family*/
+Manual Deployment -
+- sudo yum install java-11-amazon-corretto-headless -y -> RHEL 10 VERSION - sudo dnf install java-21-openjdk-devel -y
+- java --version -> openjdk 21.0.11 2026-04-21 LTS
+- Google Tomcat 8.0.52 download 
+- sudo wget https://archive.apache.org/dist/tomcat/tomcat-8/v8.0.52/bin/apache-tomcat-8.0.52.tar.gz
+- ls
+- tar xvf apache-tomcat-8.0.52.tar.gz
+- ls
+- cd apache-tomcat-8.0.52/
+- ls 
+- cd bin/ -> copy the path /home/ec2-user/apache-tomcat-8.0.52/bin 
+set environment variable
+- sudo vi /etc/profile 
+- export CATALINA_HOME=/home/ec2-user/apache-tomcat-8.0.52
+- export PATH=$PATH:/home/ec2-user/apache-tomcat-8.0.52/bin 
+- reboot 
+/*tomcat version - 8.0.52*/
+version.sh 
+/*Start the tomcat*/
+startup.sh 
+
+
+verification: go to browser- publicip:8080 
+NOTE: shutdown.sh -> to shutdown the tomcat  
+
+
+/*Installation of ApacheTomcat on Debian family - ubuntu*/
+Manual Deployment -
+- sudo apt install
+- sudo apt install openjdk-11-jdk -y
+- java -version
+- Google Tomcat 8.0.52 download 
+- sudo wget https://archive.apache.org/dist/tomcat/tomcat-8/v8.0.52/bin/apache-tomcat-8.0.52.tar.gz
+- ls
+- tar xvf apache-tomcat-8.0.52.tar.gz
+- ls
+- cd apache-tomcat-8.0.52/
+- ls 
+- cd bin/ -> copy the path /home/ubuntu/apache-tomcat-8.0.52/bin 
+set environment variable
+- sudo vi /etc/profile 
+- export CATALINA_HOME=/home/ubuntu/apache-tomcat-8.0.52
+- export PATH=$PATH:/home/ubuntu/apache-tomcat-8.0.52/bin 
+- reboot 
+/*tomcat version - 8.0.52*/
+version.sh 
+/*Start the tomcat*/
+startup.sh 
+
+/*Create a user in Tomcat Linux and how to change the Tomcat Port*/
+go to where we installed tomcat, conf folder, to change the port number we need to go server.xml, tomcat-users.xml  
+Go to server.xml using vi -> change the port to some 9090 and reboot the instance 
+
+sudo vi tomcat-users.xml  -> 
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<user username="admin"  password="admin" roles="manager-gui,manager-script"/>
+reboot
+startup.sh  -> start the tomcat 
+
+/*Create a user in Tomcat Ubuntu and how to change the Tomcat port(in server.xml)*/
+server.xml, tomcat-users.xml -> these files are located where we install tomcat 
+
+sudo vi tomcat-users.xml  -> 
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<user username="admin"  password="admin" roles="manager-gui,manager-script"/>
+reboot
+startup.sh  -> start the tomcat and access from browser
+
+
+
+/*War Deployment/Delivery into Application server manually */
+
+Server1: Maven
+Server2: Tomcat-linux
+
+Using MobaXterm, open 2 servers and check the version, 
+Server1: mvn --version
+Server2: startup.sh version.sh
+
+*authentication need to happen - we have to generate a trust relation between Server1 and Server2
+From Server1, ssh-keygen  (copy the public key and paste in Server2 authorized keys and restart both servers ssh using sudo service ssh restart/sudo systemctl restart sshd)
+
+From Server1 – We have to deploy this .war to Server2 Tomcat server in webapps folder (/home/ec2-user/apache-tomcat-8.0.52/webapps)
+
+-- one Linux to another linunx copy the .war using scp 
+Now, from Server1 maven copy the .war file to Server2 tomcat using scp 
+ 
+scp petclinic.war ec2-user@3.80.164.206:/home/ec2-user/apache-tomcat-8.0.52/webapps
+
+Check in server2 - .war file is copied to webapps folder -> How can we verify deployment is successful – with same name a folder (petclinic) will be created
+ 
+Now, check from browser – as its web application - http://3.80.164.206:8080/petclinic/
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
